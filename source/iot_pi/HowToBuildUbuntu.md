@@ -3,14 +3,6 @@ title: How to Build Ubuntu
 
 The procedure to describes how to create Ubuntu image with SD Card on **LEC-PX30 with Industrial Pi-SMARC**. The version of Ubuntu used is 18.04.3 LTS. 
 
-**Note:** PX30 Buildroot only is generated for eMMC booting by default. Therefore, we provide these steps how to generate Ubuntu image for SD caed. 
-
-[Ryan] is it ture??
-
-
-
-
-
 
 
 ##   Recommended Hardware
@@ -48,19 +40,21 @@ tree texinfo
 
 
 
-## Here is the step:
+## Getting Started
 
-**Step 1**: Prepare Ubuntu root file systme Image, as mentioned in "**Preparing Ubuntu Root File System**" section.
+The procedure is to replace buildroot rootfs image with Ubuntu's one.
 
-**Step 2**: Generate Buildroot SD Card Image, as mentioned in "**Generating Buildroot Image**" section.
+* In the beginning, we create Ubuntu root file system Image, as mentioned in "**Step 1: Preparing Ubuntu Root File System**" section.
 
-**Step3**: Flash image (generated in Step2) to the prepared SD card by using **SD Firmware Tool**, as mentioned in "**Flashing buildroot image to SD Card**" section
+* Also, to generate Buildroot SD Card Image, as mentioned in "**Step 2: Generating Buildroot Image**" section.
 
-**Step4**: Replace the orginal rootfs image with Ubuntu one, as mentioned in "**Replcing Rootfs image with Ubuntu one**"
+* Once Buildroot SD card is ready, we flash to the prepared SD card by using **SD Firmware Tool**, as mentioned in "**Step 3: Flashing buildroot image to SD Card**" section
+
+* Final step is to replace the buidroot rootfs image with Ubuntu one, as mentioned in "**Step 4: Replacing Buildroot Rootfs with Ubuntu's one**"
 
 
 
-## Step1: Preparing Ubuntu Root File System
+## Step 1: Preparing Ubuntu Root File System
 
 1. Install QEMU on the development host PC with Ubuntu OS
 
@@ -84,7 +78,7 @@ tree texinfo
 
    
 
-### Configure the rootfs
+###  Configure the rootfs
 
 1. Get your network ready:
 
@@ -162,9 +156,9 @@ tree texinfo
 
 
 
-### Add I/O Drivers to Rootfs 
+###   Add I/O Drivers to Rootfs 
 
-####     - Ethernet & CAN Bus
+####        - Ethernet & CAN Bus
 
 1. Create a directory to copy the Ethernet and CAN kernel modules
 
@@ -195,7 +189,7 @@ tree texinfo
     
     **Note:** [Netplan](https://wiki.ubuntu.com/Netplan) enables easily configuring networking on a system via YAML files. Netplan processes the YAML and generates the required configurations for either NetworkManager or systemd-network the system’s renderer. Netplan [replaced ifupdown](http://blog.cyphermox.net/2017/06/netplan-by-default-in-1710.html) as the default configuration utility starting with Ubuntu 17.10 Artful. 
 
-####    - Audio
+####       - Audio
 
 1. Please click [here](https://hq0epm0west0us0storage.blob.core.windows.net/development/LEC-PX30/Images/Ubuntu/UbuntuNecessaryFiles/asound.state) to download **asound.state** file and copy to `/var/lib/alsa/`
 
@@ -203,7 +197,7 @@ tree texinfo
    $ sudo cp asound.state $HOME/temp/var/lib/alsa/
    ```
 
-####    - Enable I/O Interfaces 
+####       - Enable I/O Interfaces 
 
 1. Please click [here](https://hq0epm0west0us0storage.blob.core.windows.net/development/LEC-PX30/Images/Ubuntu/UbuntuNecessaryFiles/Load.sh) to download and copy **Load.sh** file to the `rockchip_test`folder. 
 
@@ -229,7 +223,7 @@ tree texinfo
    $ sudo chmod +x $HOME/temp/etc/rc.local
    ```
 
-#### - Adding MRAA 
+####    - Adding MRAA 
 
 1. Download the `adlink-mraa-master.tar` file from [here](https://hq0epm0west0us0storage.blob.core.windows.net/development/LEC-PX30/Images/Ubuntu/UbuntuNecessaryFiles/adlink-mraa-master.tar) and extract and copy the binaries, applications and libraries to respective folders:
 
@@ -242,7 +236,6 @@ tree texinfo
    $ sudo cp -r $HOME/mraa/usr/lib/pkgconfig/mraa.pc $HOME/temp/usr/lib/pkgconfig/
    $ sudo cp -r $HOME/mraa/usr/share/* $HOME/temp/usr/share/
    ```
-
 
 
 
@@ -264,112 +257,11 @@ Below command will create new rootfs.img file of size 7.4 GB (6.9 GB)
 
 
 
-### Adding RFS Image to Buildroot 
+## Step 2: **Generating Buildroot SD card Image**
 
-To add the created root file system image to LEC-PX30 Buildroot Linux, follow the procedure below:
+Download [LEC-PX30 Buildroot SDK](https://hq0epm0west0us0storage.blob.core.windows.net/development/LEC-PX30/SDK/v1.0.8-20200309/px30_buildroot_es2_sdk_20200309.tar.gz) and extract it.
 
-Before start to compile Buildroot, please Install the required packages on the development host PC.
-
-```
-$ sudo apt-get install repo git-core gitk git-gui gcc-arm-linux-gnueabihf u-boot-tools device-tree-compiler gcc-aarch64-linux-gnu mtools parted libudev-dev libusb-1.0-0-dev python-linaro-image-tools linaro-image-tools autoconf autotools-dev libsigsegv2 m4 intltool libdrm-dev curl sed make binutils build-essential gcc g++ bash patch gzip bzip2 perl tar cpio python unzip rsync file bc wget libncurses5 libqt4-dev libglib2.0-dev libgtk2.0-dev libglade2-dev cvs git mercurial rsync openssh-client subversion asciidoc w3m dblatex graphviz python-matplotlib libc6:i386 libssl-dev texinfo liblz4-tool genext2fs lib32stdc++6
-```
-
-1. Download [LEC-PX30 Buildroot SDK](https://hq0epm0west0us0storage.blob.core.windows.net/development/LEC-PX30/SDK/v1.0.8-20200125/px30_buildroot_es2_sdk_20200125.tar.gz) and extract it.
-
-   **Note**: use `iPIsmarc-es2` branch and root for the building. use`git branch` command under **px30_buildroot/kernel** to check the branch version.
-
-2. Change directory to px30_buildroot.
-
-   ```
-   $ cd px30_buildroot
-   ```
-
-3. Create a temporary directory.
-
-   ```
-   $ mkdir ubunturootfs
-   ```
-
-4. Copy the created rootfs.img to ubunturootfs.
-
-   ```
-   $ cp <path_to_ubuntu_rootfs>/rootfs.img ubunturootfs
-   ```
-
-5. Create a **parameter-ubuntu.txt** file under device/rockchip/px30 folder.
-
-   ```
-   $ cp device/rockchip/px30/parameter-buildroot.txt device/rockchip/px30/parameter-ubuntu.txt
-   ```
-
-6. Change directory to ubunturootfs folder and to check UUID of rootfs image, run the command below.
-
-   ```
-   $ file ubunturootfs/rootfs.img
-   ```
-   
-   <img align="center" src="HowToBuildUbuntu.assets/ubuntu_uuid.png"/>
-
-7. Modify UUID you have in`parameter-ubuntu.txt` file
-
-   ```
-   $ vi device/rockchip/px30/parameter-ubuntu.txt
-   ```
-
-    ![img](HowToBuildUbuntu.assets/ubuntu_uuid_m.png)
-   
-   Now, modify the rootfs size and alter the user data starting address as per requirement. In the screenshot below, we are changing rootfs size to 7GB.![img](HowToBuildUbuntu.assets/ubuntu_uuid_s.png)
-   
-8. Open `BoardConfig_open.mk` file and change the path for `parameter-ubuntu.txt` and `rootfs.img` files.
-
-   ```
-   $ sudo vi device/rockchip/px30/BoardConfig_open.mk
-   ```
-   
-    ![img](HowToBuildUbuntu.assets/ubuntu_parameter.png)
-
-9. Open `rk3326.dtsi` file and add new part UUID or device partition. In the screenshot below, we have added `/dev/mmcblk1p8 partition`.
-
-   ```
-   $ sudo vi kernel/arch/arm64/boot/dts/rockchip/rk3326-linux.dtsi
-   ```
-   
-   ![img](HowToBuildUbuntu.assets/ubuntu_u-boot.png)
-
-10. Change directory to `px30_buildroot`
-
-       ```
-      $ cd px30_buildroot
-       ```
-
-
-11. Run build.sh
-
-       ```
-      $ ./build.sh
-       ```
-
-12. After you run "./build.sh", a menuconfig screen will appear as shown below. Select **"Exit"** as shown below.
-
-    ![image-20200309102707320](HowToBuildUbuntu.assets/image-20200309102707320.png)
-
-    **Note:** The image will be generated as **"update.img"** under rockdev folder.
-
-[Ryan]
-
-  Do we need to create update,.img? because pure buildroot image we also generate? 
-
-
-
-## Step 2: **Generating Buildroot Image**
-
-Download [LEC-PX30 Buildroot SDK](https://hq0epm0west0us0storage.blob.core.windows.net/development/LEC-PX30/SDK/v1.0.8-20200309/px30_buildroot_es2_sdk_20200309.tar.gz) and extract it. ( the same source as Step1)
-
-[Ryan] do we need to download again? or use the same source ( step 1) is ok? 
-
-
-
-**Note**: Use `iPIsmarc-es2` branch and root for building. Use `git branch` command under **px30_buildroot/kernel** to check the branch version.
+**Note**: Use `iPIsmarc-es2` branch and root for Creating Custom Images for SD Card Creating Custom Images for SD Card Building. Use `git branch` command under **px30_buildroot/kernel** to check the branch version.
 
 Change directory to px30_buildroot.
 
@@ -387,17 +279,15 @@ After you run "./build.sh", a menuconfig screen will appear as shown below. Sele
 
 <img src="C:/Users/ryanzj.huang/Desktop/IndustrialPi_SMARC_Release_Final_9Mar2020/Industrial Pi-SMARC.assets/build_menuconfig.png" style="zoom:50%;" />
 
-The image will be generated as **"update.img"** under rockdev folder.
+The image will be generated as **"update.img"** under rockdev folder and will be used in SD Card.
 
 
 
 
 
+## Step 3: **Flashing buildroot image to SD Card**
 
-
-## Step 3: Flashing buildroot image to SD Card
-
-Flash image (generated in Step2) to the prepared SD card by using **SD Firmware Tool**
+Flash image (generated in Step2) to the prepared SD card by using **SD Firmware Tool** (this tool is executed on Windows environment)
 
 **Note:** Before going to flash image to SD card, format it. The size should be at least 8 Gb.
 
@@ -409,15 +299,18 @@ Flash image (generated in Step2) to the prepared SD card by using **SD Firmware 
 ![1583303411226](HowToBuildUbuntu.assets/SDFwTool.png)
 
 - Select "Create" to prepare SD card.
+
 - It will prompt user that data will be lost. Select "Yes" to continue.
 
+  
 
 
-## Step4: Replcing Rootfs image with Ubuntu one
 
-After finish stpe 3, please make sure your SD card is connected to the development Host PC.
+## Step 4: Replacing Buildroot Rootfs with Ubuntu's one
 
-1. unmount the mounted partitions
+After finish step 3, get your SD card to connect to the development Linux Host PC .
+
+1. Unmount the mounted partitions
 
    ```
    $ sudo umount /dev/sdc*
@@ -469,7 +362,7 @@ After finish stpe 3, please make sure your SD card is connected to the developme
 
 
 
-10. Close the GParted application and eject SD card and connect SD Card to the development Host PC.
+10. Close the GParted and eject SD card. Also connect your SD Card to the development Linux Host PC.
 
 11. Run **lsblk** command to get the path for mounted rootfs partition
 
@@ -488,7 +381,7 @@ After finish stpe 3, please make sure your SD card is connected to the developme
 
     
 
-13. Create a temporary directory and mount the **rootfs.img**, which is prepared at step1
+13. Create a temporary directory and mount the **rootfs.img**, which is prepared at **Step 1: Preparing Ubuntu Root File System**
 
     ```
     $ mkdir $HOME/sd_temp
