@@ -44,13 +44,13 @@ tree texinfo
 
 The procedure is to replace buildroot rootfs image with Ubuntu's one.
 
-* In the beginning, we create Ubuntu root file system Image, as mentioned in "**Step 1: Preparing Ubuntu Root File System**" section.
+* **Step 1: Preparing Ubuntu Root File System**: create Ubuntu root file system Image 
 
-* Also, to generate Buildroot SD Card Image, as mentioned in "**Step 2: Generating Buildroot Image**" section.
+* **Step 2: Generating Buildroot Image**: generate Buildroot SD Card Image
 
-* Once Buildroot SD card is ready, we flash to the prepared SD card by using **SD Firmware Tool**, as mentioned in "**Step 3: Flashing buildroot image to SD Card**" section
+* **Step 3: Flashing buildroot image to SD Card**: flash Buildroot SD card image to the prepared SD card by using **SD Firmware Tool**
 
-* Final step is to replace the buidroot rootfs image with Ubuntu one, as mentioned in "**Step 4: Replacing Buildroot Rootfs with Ubuntu's one**"
+* **Step 4: Replacing Buildroot Rootfs with Ubuntu's one**: replace the buidroot rootfs image with Ubuntu's one on BuildRoot SD Card image
 
 
 
@@ -73,7 +73,7 @@ The procedure is to replace buildroot rootfs image with Ubuntu's one.
 4. Extract the file to temp folder
 
    ```
-   $ sudo tar -xpf ubuntu-base-18.04.2-base-arm64.tar.gz -C $HOME/temp
+   $ sudo tar -xpf ubuntu-base-18.04.1-base-arm64.tar.gz -C $HOME/temp
    ```
 
    
@@ -187,11 +187,11 @@ The procedure is to replace buildroot rootfs image with Ubuntu's one.
       renderer: NetworkManager
     ```
     
-    **Note:** [Netplan](https://wiki.ubuntu.com/Netplan) enables easily configuring networking on a system via YAML files. Netplan processes the YAML and generates the required configurations for either NetworkManager or systemd-network the system’s renderer. Netplan [replaced ifupdown](http://blog.cyphermox.net/2017/06/netplan-by-default-in-1710.html) as the default configuration utility starting with Ubuntu 17.10 Artful. 
+    **Note:** [Netplan](https://wiki.ubuntu.com/Netplan) enables easily configuring networking on a system via YAML files. Netplan processes the YAML and generates the required configurations for either NetworkManager or systemd-network the system’s renderer. 
 
 ####       - Audio
 
-1. Please click [here](https://hq0epm0west0us0storage.blob.core.windows.net/development/LEC-PX30/Images/Ubuntu/UbuntuNecessaryFiles/asound.state) to download **asound.state** file and copy to `/var/lib/alsa/`
+1. Please click [here](https://hq0epm0west0us0storage.blob.core.windows.net/development/LEC-PX30/Images/Ubuntu/UbuntuNecessaryFiles/asound.zip) to download **asound.state** file and copy to `/var/lib/alsa/`
 
    ```
    $ sudo cp asound.state $HOME/temp/var/lib/alsa/
@@ -199,7 +199,7 @@ The procedure is to replace buildroot rootfs image with Ubuntu's one.
 
 ####       - Enable I/O Interfaces 
 
-1. Please click [here](https://hq0epm0west0us0storage.blob.core.windows.net/development/LEC-PX30/Images/Ubuntu/UbuntuNecessaryFiles/Load.sh) to download and copy **Load.sh** file to the `rockchip_test`folder. 
+1. Please click [here](https://hq0epm0west0us0storage.blob.core.windows.net/development/LEC-PX30/Images/Ubuntu/UbuntuNecessaryFiles/Load.zip) to download and copy **Load.sh** file to the `rockchip_test`folder. 
 
    **Note**: it is shell script to insert modules on every reboot 
 
@@ -212,7 +212,7 @@ The procedure is to replace buildroot rootfs image with Ubuntu's one.
    $ sudo chmod +x $HOME/temp/home/adlink/rockchip_test/Load.sh
    ```
 
-3. Please click [here](https://hq0epm0west0us0storage.blob.core.windows.net/development/LEC-PX30/Images/Ubuntu/UbuntuNecessaryFiles/rc.local) to download and copy **rc.local** to `temp/etc/` 
+3. Please click [here](https://hq0epm0west0us0storage.blob.core.windows.net/development/LEC-PX30/Images/Ubuntu/UbuntuNecessaryFiles/rc.zip) to download and copy **rc.local** to `temp/etc/` 
 
    ```
    $ sudo cp rc.local $HOME/temp/etc/
@@ -272,12 +272,12 @@ $ cd px30_buildroot
 Run build script.
 
 ```shell
-$ ./build.sh
+$ sudo ./build.sh
 ```
 
 After you run "./build.sh", a menuconfig screen will appear as shown below. Select **"Exit"** as shown below.
 
-<img src="C:/Users/ryanzj.huang/Desktop/IndustrialPi_SMARC_Release_Final_9Mar2020/Industrial Pi-SMARC.assets/build_menuconfig.png" style="zoom:50%;" />
+![image-20200309102707320](HowToBuildUbuntu.assets/image-20200309102707320.png)
 
 The image will be generated as **"update.img"** under rockdev folder and will be used in SD Card.
 
