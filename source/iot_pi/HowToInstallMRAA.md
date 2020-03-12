@@ -21,7 +21,39 @@ Our MRAA libraries has been ready on [**Eclipse MRAA GitHub**]( https://github.c
 
 
 
-## How to Build MRAA on your boards:
+## How to Build & Install MRAA on your boards:
 
-Please refer to [here](https://github.com/eclipse/mraa/blob/master/docs/building.md) to guide you how to build MRAA
+#### Building mraa on Ubuntu:
+
+1. Build dependencies is required:
+
+   ```
+   $ sudo apt-get install git build-essential swig3.0 python-dev nodejs-dev cmake libjson-c-dev python3-dev
+   ```
+   
+   **Note: **On Ubuntu Bionic (18.04) you'll need to downgrade node.js (see [nodesource](https://github.com/nodesource/distributions) for some handy         install scripts) or patch SWIG. 
+   
+2. Basic build Steps:
+
+   ```
+   $ git clone https://github.com/eclipse/mraa.git
+   $ cd mraa
+   $ make build
+   $ cd build
+   $ cmake ..
+   ```
+
+   **Note:** If this goes wrong and you have all the dependencies installed, then please file an issue with the full output of `cmake ..` and `make` or however far you got.
+
+3. After that you can install built files by running:
+
+   ```
+   sudo make install
+   ```
+
+   
+
+#### Building mraa on Yocto:
+
+Intel mraa recipe is here http://git.yoctoproject.org/cgit/cgit.cgi/meta-intel-iot-middleware/tree/recipes-devtools?h=daisy please add it to your building Yocto.
 

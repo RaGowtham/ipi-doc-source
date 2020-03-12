@@ -1,7 +1,13 @@
-title: How to Build Ubuntu
+title: How to Build Ubuntu 
 ---
 
-The procedure to describes how to create Ubuntu image on **LEC-PX30 with Industrial Pi-SMARC**. The version of Ubuntu used is 18.04.3 LTS. 
+The procedure to describes how to create Ubuntu image with SD Card on **LEC-PX30 with Industrial Pi-SMARC**. The version of Ubuntu used is 18.04.3 LTS. 
+
+**Note:** PX30 Buildroot only is generated for eMMC booting by default. Therefore, we provide these steps how to generate Ubuntu image for SD caed. 
+
+[Ryan] is it ture??
+
+
 
 
 
@@ -42,7 +48,19 @@ tree texinfo
 
 
 
-## Preparing Ubuntu Root File System
+## Here is the step:
+
+**Step 1**: Prepare Ubuntu root file systme Image, as mentioned in "**Preparing Ubuntu Root File System**" section.
+
+**Step 2**: Generate Buildroot SD Card Image, as mentioned in "**Generating Buildroot Image**" section.
+
+**Step3**: Flash image (generated in Step2) to the prepared SD card by using **SD Firmware Tool**, as mentioned in "**Flashing buildroot image to SD Card**" section
+
+**Step4**: Replace the orginal rootfs image with Ubuntu one, as mentioned in "**Replcing Rootfs image with Ubuntu one**"
+
+
+
+## Step1: Preparing Ubuntu Root File System
 
 1. Install QEMU on the development host PC with Ubuntu OS
 
@@ -66,7 +84,7 @@ tree texinfo
 
    
 
-## Configure the rootfs
+### Configure the rootfs
 
 1. Get your network ready:
 
@@ -144,9 +162,9 @@ tree texinfo
 
 
 
-## Add I/O Drivers to Rootfs 
+### Add I/O Drivers to Rootfs 
 
-####    Ethernet & CAN Bus
+####     - Ethernet & CAN Bus
 
 1. Create a directory to copy the Ethernet and CAN kernel modules
 
@@ -177,7 +195,7 @@ tree texinfo
     
     **Note:** [Netplan](https://wiki.ubuntu.com/Netplan) enables easily configuring networking on a system via YAML files. Netplan processes the YAML and generates the required configurations for either NetworkManager or systemd-network the system’s renderer. Netplan [replaced ifupdown](http://blog.cyphermox.net/2017/06/netplan-by-default-in-1710.html) as the default configuration utility starting with Ubuntu 17.10 Artful. 
 
-####    Audio
+####    - Audio
 
 1. Please click [here](https://hq0epm0west0us0storage.blob.core.windows.net/development/LEC-PX30/Images/Ubuntu/UbuntuNecessaryFiles/asound.state) to download **asound.state** file and copy to `/var/lib/alsa/`
 
@@ -185,7 +203,7 @@ tree texinfo
    $ sudo cp asound.state $HOME/temp/var/lib/alsa/
    ```
 
-####    Enable I/O Interfaces 
+####    - Enable I/O Interfaces 
 
 1. Please click [here](https://hq0epm0west0us0storage.blob.core.windows.net/development/LEC-PX30/Images/Ubuntu/UbuntuNecessaryFiles/Load.sh) to download and copy **Load.sh** file to the `rockchip_test`folder. 
 
@@ -211,7 +229,7 @@ tree texinfo
    $ sudo chmod +x $HOME/temp/etc/rc.local
    ```
 
-#### Adding MRAA 
+#### - Adding MRAA 
 
 1. Download the `adlink-mraa-master.tar` file from [here](https://hq0epm0west0us0storage.blob.core.windows.net/development/LEC-PX30/Images/Ubuntu/UbuntuNecessaryFiles/adlink-mraa-master.tar) and extract and copy the binaries, applications and libraries to respective folders:
 
@@ -228,7 +246,7 @@ tree texinfo
 
 
 
-## Make the Root File System
+### Make the Root File System
 
 Execute the commands below to make the rootfs.img. Notice that you need change the “count” value according to the size of the “temp” folder.
 
@@ -246,7 +264,7 @@ Below command will create new rootfs.img file of size 7.4 GB (6.9 GB)
 
 
 
-## Adding RFS Image to Buildroot 
+### Adding RFS Image to Buildroot 
 
 To add the created root file system image to LEC-PX30 Buildroot Linux, follow the procedure below:
 
@@ -337,4 +355,157 @@ $ sudo apt-get install repo git-core gitk git-gui gcc-arm-linux-gnueabihf u-boot
 
     **Note:** The image will be generated as **"update.img"** under rockdev folder.
 
-13. Please refer to [here](https://ipi.wiki/iot_pi/HowToFlashImage.html) to guide you how to flash Ubuntu Image to SD card.
+[Ryan]
+
+  Do we need to create update,.img? because pure buildroot image we also generate? 
+
+
+
+## Step 2: **Generating Buildroot Image**
+
+Download [LEC-PX30 Buildroot SDK](https://hq0epm0west0us0storage.blob.core.windows.net/development/LEC-PX30/SDK/v1.0.8-20200309/px30_buildroot_es2_sdk_20200309.tar.gz) and extract it. ( the same source as Step1)
+
+[Ryan] do we need to download again? or use the same source ( step 1) is ok? 
+
+
+
+**Note**: Use `iPIsmarc-es2` branch and root for building. Use `git branch` command under **px30_buildroot/kernel** to check the branch version.
+
+Change directory to px30_buildroot.
+
+```shell
+$ cd px30_buildroot
+```
+
+Run build script.
+
+```shell
+$ ./build.sh
+```
+
+After you run "./build.sh", a menuconfig screen will appear as shown below. Select **"Exit"** as shown below.
+
+<img src="C:/Users/ryanzj.huang/Desktop/IndustrialPi_SMARC_Release_Final_9Mar2020/Industrial Pi-SMARC.assets/build_menuconfig.png" style="zoom:50%;" />
+
+The image will be generated as **"update.img"** under rockdev folder.
+
+
+
+
+
+
+
+## Step 3: Flashing buildroot image to SD Card
+
+Flash image (generated in Step2) to the prepared SD card by using **SD Firmware Tool**
+
+**Note:** Before going to flash image to SD card, format it. The size should be at least 8 Gb.
+
+- Download the SD Firmware Tool from [SD Firmware Tool Download Link](https://hq0epm0west0us0storage.blob.core.windows.net/development/LEC-PX30/Tools/SDDiskTool_v1.6.rar)
+- Use **SD Firmware Tool** to prepare a bootable SD card. 
+- Run **SD Firmware Tool**  as a administrator.
+- Select "Removable Disk" as SD card.  Choose "Function Mode" as SD boot. Load the SD card image as "Firmware" as shown below.
+
+![1583303411226](HowToBuildUbuntu.assets/SDFwTool.png)
+
+- Select "Create" to prepare SD card.
+- It will prompt user that data will be lost. Select "Yes" to continue.
+
+
+
+## Step4: Replcing Rootfs image with Ubuntu one
+
+After finish stpe 3, please make sure your SD card is connected to the development Host PC.
+
+1. unmount the mounted partitions
+
+   ```
+   $ sudo umount /dev/sdc*
+   ```
+
+   **Note:** In our case, `/dev/sdc is SD card device name
+
+2. Run **GParted** by using command line
+
+   ```
+   $ sudo gparted
+   ```
+
+   **Note**: GParted is a free partition editor for graphically managing your disk partitions. Please check [this link](https://gparted.org/index.php).  
+
+3. Select SD card as highlighted in above corner in below picture![gparted1](HowToBuildUbuntu.assets/gparted1-1583897658803.png)
+
+
+
+4. Select partition 9 and give right click, then select delete![gparted2](HowToBuildUbuntu.assets/gparted2-1583897706819.png)
+
+
+
+5. Save the changes and select apply
+
+   ![gparted3](HowToBuildUbuntu.assets/gparted3-1583903424202.png)
+
+
+
+6. After changes are applied, select close.
+
+   ![gparted4](HowToBuildUbuntu.assets/gparted4.png)
+
+
+
+7. Select the root fs partition and select resize option above. Partition 8 (/dev/sdc8) is the rootfs partition in below picture.
+
+   ![gparted5](HowToBuildUbuntu.assets/gparted5.png)
+
+
+
+8. Increase the size and select Resize/Move option
+
+   ![gparted6](HowToBuildUbuntu.assets/gparted6.png)
+
+9. Save the changes and select apply
+
+   ![gparted3](HowToBuildUbuntu.assets/gparted3-1583903538497.png)
+
+
+
+10. Close the GParted application and eject SD card and connect SD Card to the development Host PC.
+
+11. Run **lsblk** command to get the path for mounted rootfs partition
+
+    ![lsblk_output](HowToBuildUbuntu.assets/lsblk_output-1583903709858.png)
+
+
+
+12. Remove the existing contents as this file system is the default build root file system.
+
+    ```
+    $ sudo rm -rf <mount_path>/*
+    $ sync
+    ```
+
+    For example, the required partition is **sdc8** here with path **/media/nhcpc20011/ac09cb0f-0d9b-4441-902c-bf48b1f10127/**
+
+    
+
+13. Create a temporary directory and mount the **rootfs.img**, which is prepared at step1
+
+    ```
+    $ mkdir $HOME/sd_temp
+    $ sudo mount rootfs.img $HOME/sd_temp
+    ```
+
+    
+
+14. Run the following commands to copy the contents of the ubuntu rootfs.img to the SD card.
+
+    ```
+    $ sudo cp -rfp $HOME/sd_temp/* <mount_path>/
+    $ sync
+    $ sudo umount $HOME/sd_temp
+    ```
+
+    Eject the SD card. You can directly insert SD card and power on the system to boot using the SD card.
+
+    **Note:** The first boot may take over 5 minutes for the desktop screen to appear.
+
