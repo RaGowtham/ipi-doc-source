@@ -28,7 +28,18 @@ Our MRAA libraries has been ready on [**Eclipse MRAA GitHub**]( https://github.c
 1. Build dependencies is required:
 
    ```
-   $ sudo apt-get install git build-essential swig3.0 python-dev nodejs-dev cmake libjson-c-dev python3-dev
+   $ sudo apt-get install git build-essential python-dev nodejs-dev cmake libjson-c-dev python3-dev
+   ```
+   MRAA expects swig 3.0.5, but apt repository will install only swig 3.0. to install swig greater than 3.0.5. please follow the below instructions
+
+   ```
+   $ sudo apt-get install automake libpcre3-dev
+   $ git clone https://github.com/swig/swig.git
+   $ cd swig
+   $ ./autogen.sh
+   $ ./configure
+   $ make
+   $ sudo make install
    ```
    
    **Note: **On Ubuntu Bionic (18.04) you'll need to downgrade node.js (see [nodesource](https://github.com/nodesource/distributions) for some handy         install scripts) or patch SWIG. 
